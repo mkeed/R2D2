@@ -1,0 +1,20 @@
+{
+    "memory":[
+	{
+	    "name":"FLASH",
+	    "read":true,
+	    "exec":true,
+	    "length":"16K",
+	    "origin":"0x00000000",
+	},
+	{
+	    "name":"RAM",
+	    "read":true,
+	    "write":true,
+	    "exec":true,
+	    "length":"2K",
+	    "origin":"0x20000000",
+	}
+    ]
+
+}

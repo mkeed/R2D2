@@ -1,45 +1,54 @@
-//! By convention, main.zig is where your main function lives in the case that
-//! you are building an executable. If you are making a library, the convention
-//! is to delete this file and start with root.zig instead.
-
-pub fn main() !void {
-    // Prints to stderr (it's a shortcut based on `std.io.getStdErr()`)
-    std.debug.print("All your {s} are belong to us.\n", .{"codebase"});
-
-    // stdout is for the actual output of your application, for example if you
-    // are implementing gzip, then only the compressed bytes should be sent to
-    // stdout, not any debugging messages.
-    const stdout_file = std.io.getStdOut().writer();
-    var bw = std.io.bufferedWriter(stdout_file);
-    const stdout = bw.writer();
-
-    try stdout.print("Run `zig build test` to run the tests.\n", .{});
-
-    try bw.flush(); // Don't forget to flush!
+comptime {
+    @export(&startup_code, .{ .name = "_start", .linkage = .strong });
 }
 
-test "simple test" {
-    var list = std.ArrayList(i32).init(std.testing.allocator);
-    defer list.deinit(); // Try commenting this out and see if zig detects the memory leak!
-    try list.append(42);
-    try std.testing.expectEqual(@as(i32, 42), list.pop());
-}
+const VecFn = *const fn () void;
 
-test "use other module" {
-    try std.testing.expectEqual(@as(i32, 150), lib.add(100, 50));
-}
+const NIMI = packed struct {
+    unused1: u32 = 0,
+    unused2: u32 = 0,
+    nmi: VecFn = NothingFn,
+    hardFault: VecFn = SpinWaitFn,
+    res4: VecFn = NothingFn,
+    res5: VecFn = NothingFn,
+    res6: VecFn = NothingFn,
+    res7: VecFn = NothingFn,
+    res8: VecFn = NothingFn,
+    res9: VecFn = NothingFn,
+    res10: VecFn = NothingFn,
+    res11: VecFn = NothingFn,
+    sysTick: VecFn = NothingFn,
+    res13: VecFn = NothingFn,
+    sw: VecFn = NothingFn,
+    res15: VecFn = NothingFn,
+    wwdg: VecFn = NothingFn,
+    pvd: VecFn = NothingFn,
+    flash: VecFn = NothingFn,
+    rcc: VecFn = NothingFn,
+    exti7_0: VecFn = NothingFn,
+    awu: VecFn = NothingFn,
+    DMA1_CH1: VecFn = NothingFn,
+    DMA1_CH2: VecFn = NothingFn,
+    DMA1_CH3: VecFn = NothingFn,
+    DMA1_CH4: VecFn = NothingFn,
+    DMA1_CH5: VecFn = NothingFn,
+    DMA1_CH6: VecFn = NothingFn,
+    DMA1_CH7: VecFn = NothingFn,
+    ADC: VecFn = NothingFn,
+    I2C1_EV: VecFn = NothingFn,
+    I2C1_ER: VecFn = NothingFn,
+    USART1: VecFn = NothingFn,
+    SPI1: VecFn = NothingFn,
+    TIM1BRK: VecFn = NothingFn,
+    TIM1UP: VecFn = NothingFn,
+    TIM1TRG: VecFn = NothingFn,
+    TIM1CC: VecFn = NothingFn,
+    TIM2: VecFn = NothingFn,
+};
 
-test "fuzz example" {
-    const Context = struct {
-        fn testOne(context: @This(), input: []const u8) anyerror!void {
-            _ = context;
-            // Try passing `--fuzz` to `zig build test` and see if it manages to fail this test case!
-            try std.testing.expect(!std.mem.eql(u8, "canyoufindme", input));
-        }
-    };
-    try std.testing.fuzz(Context{}, Context.testOne, .{});
-}
+fn startup_code() callconv(.c) void {}
 
+pub fn main() !void {}
 const std = @import("std");
 
 /// This imports the separate module containing `root.zig`. Take a look in `build.zig` for details.
