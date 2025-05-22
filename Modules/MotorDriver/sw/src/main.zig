@@ -1,17 +1,19 @@
 comptime {
-    @export(&startup_code, .{ .name = "_start", .linkage = .strong });
+    @export(&ints, .{ .name = "_vectors", .linkage = .strong, .section = ".init" });
+    @export(&startup_code, .{ .name = "_start", .linkage = .strong, .section = ".startup_code" });
 }
 
+fn startup_code() callconv(.c) void {}
 fn NothingFn() callconv(.c) void {}
 fn SpinWaitFn() callconv(.c) void {
     while (true) {}
 }
+const util = @import("Util.zig");
+const VecFn = *const fn () callconv(.c) void;
 
-const VecFn = *const fn () void;
-
-const NIMI = packed struct {
-    unused1: u32 = 0,
-    unused2: u32 = 0,
+const NIMI = extern struct {
+    unused1: u32 = util.addrToJmp(@sizeOf(NIMI)),
+    unused2: u32 = 0xcafebabe,
     nmi: VecFn = NothingFn,
     hardFault: VecFn = SpinWaitFn,
     res4: VecFn = NothingFn,
@@ -51,7 +53,7 @@ const NIMI = packed struct {
     TIM2: VecFn = NothingFn,
 };
 
-fn startup_code() callconv(.c) void {}
+pub const ints = NIMI{};
 
 pub fn main() !void {}
 const std = @import("std");
