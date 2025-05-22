@@ -2,6 +2,11 @@ comptime {
     @export(&startup_code, .{ .name = "_start", .linkage = .strong });
 }
 
+fn NothingFn() callconv(.c) void {}
+fn SpinWaitFn() callconv(.c) void {
+    while (true) {}
+}
+
 const VecFn = *const fn () void;
 
 const NIMI = packed struct {
